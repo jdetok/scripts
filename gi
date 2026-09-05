@@ -15,6 +15,11 @@ while [[ $# > 0 ]]; do
             push_upstream=true
             shift
             ;;
+        -u=*)
+            push_upstream=true
+            branch="${1#-u=}"
+            shift
+            ;;
         -*)
             echo "Unknown option: $1" >&2
             shift
@@ -26,25 +31,21 @@ while [[ $# > 0 ]]; do
     esac
 done
 
-if $push_upstream && [[ ${#positional[@]} -ge 2 ]]; then
-    branch="${positional[0]}"
-    [[ -z "$msg" ]] && msg="${positional[1]}"
-elif [[ ${#positional[@]} -ge 1 ]]; then
-    [[ -z "$msg" ]] && msg="${positional[0]}"
+# if no message is passed prompt for one
+if [[ -z "$msg" ]] && [[ ${#positional[@]} -ge 1 ]]; then
+    msg="${positional[0]}"
 fi
 
-branch="${branch:-main}"
-
-# if no message is passed prompt for one
 if [[ -z "$msg" ]]; then
     read -p "commit msg can't be empty: " msg
 fi 
 
-# run git commands
-git add . && git commit -m "$msg"
+git add . && git commit -m "$msg" && { 
+    $push_upstream && git push -u origin "$branch" || git push
+}
 
-if $push_upstream; then
-    git push -u origin "$branch"
-else
-    git push
-fi
+# if $push_upstream; then
+#     git push -u origin "$branch"
+# else
+#     git push
+# fi
