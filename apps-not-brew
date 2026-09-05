@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+is_apple_app() {
+    local bundle_id
+    bundle_id="$(mdls -raw -name kMDItemCFBundleIdentifier "$1" 2>/dev/null || true)"
+    [[ "${bundle_id}" == com.apple.* ]]
+}
+
+all_apps="$(
+    find /Applications -maxdepth 1 -name '*.app' | while IFS= read -r app; do
+        is_apple_app "${app}" && continue
+        basename "${app}"
+    done | sort
+)"
+
+brew_apps="$(
+    for caskroom_dir in /opt/homebrew/Caskroom/*/ /usr/local/Caskroom/*/; do
+        [[ -d "${caskroom_dir}" ]] || continue
+        find "${caskroom_dir}" -maxdepth 2 -name '*.app' -exec basename {} \;
+    done | sort -u
+)"
+
+comm -23 <(echo "${all_apps}") <(echo "${brew_apps}")
