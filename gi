@@ -36,7 +36,7 @@ if [[ -z "$msg" ]] && [[ ${#positional[@]} -ge 1 ]]; then
 fi
 
 if [[ -z "$msg" ]]; then
-    read -p "commit msg can't be empty: " msg
+    read -p "commit message can't be empty: " msg
 fi 
 
 git add . && git commit -m "$msg" && { 
