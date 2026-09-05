@@ -31,7 +31,6 @@ while [[ $# > 0 ]]; do
     esac
 done
 
-# if no message is passed prompt for one
 if [[ -z "$msg" ]] && [[ ${#positional[@]} -ge 1 ]]; then
     msg="${positional[0]}"
 fi
@@ -44,8 +43,3 @@ git add . && git commit -m "$msg" && {
     $push_upstream && git push -u origin "$branch" || git push
 }
 
-# if $push_upstream; then
-#     git push -u origin "$branch"
-# else
-#     git push
-# fi
