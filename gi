@@ -13,6 +13,7 @@ while [[ $# > 0 ]]; do
             ;;
         -u)
             push_upstream=true
+            branch="$(git symbolic-ref --short HEAD)"
             shift
             ;;
         -u=*)
